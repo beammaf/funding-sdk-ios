@@ -227,18 +227,18 @@ SWIFT_CLASS("_TtC10FundingSDK10FundingSDK")
 + (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
 @end
 
-@protocol TokenProvider;
+@protocol FundingTokenProvider;
 
 SWIFT_CLASS("_TtC10FundingSDK17FundingSDKBuilder")
 @interface FundingSDKBuilder : NSObject
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 - (FundingSDKBuilder * _Nonnull)setEnvironmentWithEnvironment:(Environment * _Nonnull)environment SWIFT_WARN_UNUSED_RESULT;
-- (FundingSDKBuilder * _Nonnull)setTokenProviderWithProvider:(id <TokenProvider> _Nonnull)provider SWIFT_WARN_UNUSED_RESULT;
+- (FundingSDKBuilder * _Nonnull)setTokenProviderWithProvider:(id <FundingTokenProvider> _Nonnull)provider SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
-SWIFT_PROTOCOL("_TtP10FundingSDK13TokenProvider_")
-@protocol TokenProvider <NSObject>
+SWIFT_PROTOCOL("_TtP10FundingSDK20FundingTokenProvider_")
+@protocol FundingTokenProvider <NSObject>
 - (NSString * _Nullable)getAuthenticationToken SWIFT_WARN_UNUSED_RESULT;
 @end
 

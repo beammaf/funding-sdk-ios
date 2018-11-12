@@ -1,0 +1,11 @@
+framework module FundingSDK {
+  umbrella header "FundingSDK.h"
+
+  export *
+  module * { export * }
+}
+
+module FundingSDK.Swift {
+    header "FundingSDK-Swift.h"
+    requires objc
+}

@@ -163,6 +163,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 # define SWIFT_DEPRECATED_OBJC(Msg) SWIFT_DEPRECATED_MSG(Msg)
 #endif
 #if __has_feature(modules)
+@import CoreGraphics;
 @import Foundation;
 @import ObjectiveC;
 @import UIKit;
@@ -188,6 +189,16 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 SWIFT_CLASS("_TtC10FundingSDK10CreditCard")
 @interface CreditCard : NSObject
+@property (nonatomic, copy) NSString * _Nonnull uuid;
+@property (nonatomic, copy) NSString * _Null_unspecified cardNumber;
+@property (nonatomic, copy) NSString * _Null_unspecified cvv;
+@property (nonatomic, copy) NSString * _Null_unspecified expiry;
+@property (nonatomic, copy) NSString * _Null_unspecified nameSurname;
+@property (nonatomic) BOOL requiresVerification;
+- (NSInteger)getExpirationMonth SWIFT_WARN_UNUSED_RESULT;
+- (NSInteger)getExpiryYear SWIFT_WARN_UNUSED_RESULT;
+- (NSString * _Nonnull)getCardHolderLastName SWIFT_WARN_UNUSED_RESULT;
+- (NSString * _Nonnull)getCardholderFirstName SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -204,10 +215,12 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) Environment 
 + (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
 @end
 
+@class NSError;
 
 SWIFT_CLASS("_TtC10FundingSDK7FSError")
 @interface FSError : NSObject <NSCopying>
 - (id _Nonnull)copyWithZone:(struct _NSZone * _Nullable)zone SWIFT_WARN_UNUSED_RESULT;
+@property (nonatomic, strong) NSError * _Nonnull cause;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
 @end
@@ -218,11 +231,127 @@ SWIFT_CLASS("_TtC10FundingSDK7FSError")
 SWIFT_CLASS("_TtC10FundingSDK10FundingSDK")
 @interface FundingSDK : NSObject
 + (FundingSDK * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
+/// Start the Funding for initial logic
+/// important:
+/// Don’t forget the implementation TokenProvider protocol for your valid access which is given by the Funding.
+/// <ul>
+///   <li>
+///     Parameters:
+///   </li>
+///   <li>
+///     FundingSDKBuilder: Builder includes TokenProvider and Environment
+///   </li>
+/// </ul>
+/// \code
+/// // Sample Implementation
+/// let builder = FundingSDKBuilder().setEnvironment(environment: Environment.STAGING).setTokenProvider(provider: self)
+/// FundingSDK.start(builder: builder)
+///
+/// \endcode
 + (void)startWithBuilder:(FundingSDKBuilder * _Nonnull)builder;
+/// Add your creditCard for your card management
+/// \param hostController Your initial navigationController that want open to use your add card controller
+///
+/// \param success Returns the added card model
+///
+/// \param creditCard Added card model
+///
+/// \param failure Returns the error object that includes error logic
+///
+/// \param error FSError object that includes error cause
+///
+///
+/// throws:
+/// <code>FSError</code>
+/// <ul>
+///   <li>
+///     An error of type <code>FSError</code>
+///   </li>
+/// </ul>
 - (void)addCreditCardWithHostController:(UINavigationController * _Nonnull)hostController success:(void (^ _Nonnull)(CreditCard * _Nullable))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
+/// Add your creditCard for your with your own xib file
+/// precondition:
+/// In your own controller that supply xib file, you should set your views our tag numbers for integration
+/// \param hostController Your initial navigationController that want open to use your add card controller
+///
+/// \param nibName Your custom xib name
+///
+/// \param bundle Your bundle that where your xib file includes
+///
+/// \param success Returns the added card model
+///
+/// \param creditCard Added card model
+///
+/// \param failure Returns the error object that includes error logic
+///
+/// \param error FSError object that includes error cause
+///
+///
+/// throws:
+/// <code>FSError</code>
+/// <ul>
+///   <li>
+///     An error of type <code>FSError</code>
+///   </li>
+/// </ul>
 - (void)addCreditCardWithHostController:(UINavigationController * _Nonnull)hostController nibName:(NSString * _Nonnull)nibName bundle:(NSBundle * _Nonnull)bundle success:(void (^ _Nonnull)(CreditCard * _Nullable))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
-- (void)verifyCreditCardWithCreditCard:(CreditCard * _Nonnull)creditCard veriftAmount:(NSString * _Nonnull)veriftAmount success:(void (^ _Nonnull)(CreditCard * _Nullable))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
+/// After you added your creditCard, you should verify it for security purposes. Until that, you only will be able integrate up to a certan limit.
+/// precondition:
+/// In your own controller that supply xib file, you should set your views our tag numbers for integration
+/// <ul>
+///   <li>
+///     An error of type <code>FSError</code>
+///   </li>
+/// </ul>
+/// \param success Returns the verified card model
+///
+/// \param creditCard Verified card model
+///
+/// \param failure Returns the error object that includes error logic
+///
+/// \param error FSError object that includes error cause
+///
+///
+/// throws:
+/// <code>FSError</code>
+- (void)verifyCreditCardWithCreditCard:(CreditCard * _Nonnull)creditCard verifiedAmount:(NSString * _Nonnull)verifiedAmount success:(void (^ _Nonnull)(CreditCard * _Nullable))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
 - (void)testLoginWithUsername:(NSString * _Nonnull)username pin:(NSString * _Nonnull)pin callback:(void (^ _Nonnull)(NSString * _Nonnull))callback;
+/// Get your all funding sources
+/// <ul>
+///   <li>
+///     An error of type <code>FSError</code>
+///   </li>
+/// </ul>
+/// \param success Returns the added cards
+///
+/// \param creditCards All cards that added before
+///
+/// \param failure Returns the error object that includes error logic
+///
+/// \param error FSError object that includes error cause
+///
+///
+/// throws:
+/// <code>FSError</code>
+- (void)getFundingSourcesWithSuccess:(void (^ _Nonnull)(NSArray<CreditCard *> * _Nullable))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
+/// Remove your creditCard for your card management
+/// <ul>
+///   <li>
+///     An error of type <code>FSError</code>
+///   </li>
+/// </ul>
+/// \param cardId Your card id that you want to remove
+///
+/// \param success Called empty success closure if the card removed succesfully
+///
+/// \param failure Returns the error object that includes error logic
+///
+/// \param error FSError object that includes error cause
+///
+///
+/// throws:
+/// <code>FSError</code>
+- (void)removeCardWithCardId:(NSString * _Nonnull)cardId success:(void (^ _Nonnull)(void))success failure:(void (^ _Nonnull)(FSError * _Nullable))failure;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
 @end
@@ -239,7 +368,17 @@ SWIFT_CLASS("_TtC10FundingSDK17FundingSDKBuilder")
 
 SWIFT_PROTOCOL("_TtP10FundingSDK20FundingTokenProvider_")
 @protocol FundingTokenProvider <NSObject>
-- (NSString * _Nullable)getAuthenticationToken SWIFT_WARN_UNUSED_RESULT;
+- (void)getFundingTokenOnTokenReceived:(void (^ _Nonnull)(NSString * _Nonnull))onTokenReceived;
+@end
+
+@class UIColor;
+@class NSCoder;
+
+SWIFT_CLASS("_TtC10FundingSDK15SecureTextField")
+@interface SecureTextField : UITextField
+@property (nonatomic, strong) UIColor * _Null_unspecified errorColor;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
 
 

@@ -186,6 +186,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 
 
+@class UIImage;
 
 SWIFT_CLASS("_TtC10FundingSDK10CreditCard")
 @interface CreditCard : NSObject
@@ -195,10 +196,12 @@ SWIFT_CLASS("_TtC10FundingSDK10CreditCard")
 @property (nonatomic, copy) NSString * _Null_unspecified expiry;
 @property (nonatomic, copy) NSString * _Null_unspecified nameSurname;
 @property (nonatomic) BOOL requiresVerification;
+@property (nonatomic, copy) NSString * _Nullable verificarionStatus;
 - (NSInteger)getExpirationMonth SWIFT_WARN_UNUSED_RESULT;
 - (NSInteger)getExpiryYear SWIFT_WARN_UNUSED_RESULT;
 - (NSString * _Nonnull)getCardHolderLastName SWIFT_WARN_UNUSED_RESULT;
 - (NSString * _Nonnull)getCardholderFirstName SWIFT_WARN_UNUSED_RESULT;
+- (UIImage * _Nullable)getIssuerLogo SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 

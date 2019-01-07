@@ -198,4 +198,4 @@ You can pass custom xib file with addCreditCard function. Xib file must have som
 |  UIButton            | Submit Button                     |100105 |
 
 ## Version
-* 1.0
+* 1.0.13
